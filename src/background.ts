@@ -51,21 +51,13 @@ async function applyBlockingRules(allowlist: string[]) {
 }
 
 async function clearBlockingRules() {
-  await chrome.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: [RULE_ID],
-  });
+  await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds: [RULE_ID] });
 }
 
 async function startSession(durationMinutes: number, strictMode: boolean): Promise<SessionState> {
   const start = Date.now();
   const endTime = start + durationMinutes * 60 * 1000;
-  const session: SessionState = {
-    isActive: true,
-    endTime,
-    durationMinutes,
-    strictMode,
-    startedAt: start,
-  };
+  const session: SessionState = { isActive: true, endTime, durationMinutes, strictMode, startedAt: start };
 
   const allowlist = await getAllowlist();
   await applyBlockingRules(allowlist);
@@ -84,8 +76,6 @@ async function resolveActiveDomain(): Promise<string | null> {
   const domain = normalizeDomain(tab.url);
   if (!domain) return null;
   const allowlist = normalizeAllowlist(await getAllowlist());
-  // Match allowlist entries against full hostnames, including subdomains.
-  // If the active domain is a subdomain of an allowlist entry, return the allowlist entry key.
   const matched = allowlist.find((allowed) => domain === allowed || domain.endsWith(`.${allowed}`));
   return matched || null;
 }
@@ -98,9 +88,7 @@ async function recordUsage(domain: string | null, deltaMs: number) {
 }
 
 async function updateTrackingState(nextDomain: string | null, now = Date.now()) {
-  if (currentDomain) {
-    await recordUsage(currentDomain, now - lastActiveAt);
-  }
+  if (currentDomain) await recordUsage(currentDomain, now - lastActiveAt);
   currentDomain = nextDomain;
   lastActiveAt = now;
   await setTrackingState({ domain: currentDomain, lastActiveAt });
@@ -109,14 +97,12 @@ async function updateTrackingState(nextDomain: string | null, now = Date.now()) 
 async function tickUsage() {
   const now = Date.now();
   const activeDomain = await resolveActiveDomain();
-
   if (currentDomain && currentDomain === activeDomain) {
     await recordUsage(currentDomain, now - lastActiveAt);
     lastActiveAt = now;
     await setTrackingState({ domain: currentDomain, lastActiveAt });
     return;
   }
-
   await updateTrackingState(activeDomain, now);
 }
 
@@ -132,13 +118,7 @@ async function stopSession(): Promise<SessionState> {
   await clearBlockingRules();
   await clearSession();
   chrome.alarms.clear(ALARM_NAME);
-  return {
-    isActive: false,
-    endTime: 0,
-    durationMinutes: 25,
-    strictMode: false,
-    startedAt: 0,
-  };
+  return { isActive: false, endTime: 0, durationMinutes: 25, strictMode: false, startedAt: 0 };
 }
 
 async function restoreSession() {
@@ -154,22 +134,14 @@ async function restoreSession() {
 }
 
 chrome.alarms.onAlarm.addListener(async (alarm: chrome.alarms.Alarm) => {
-  if (alarm.name === ALARM_NAME) {
-    await stopSession();
-  }
-  if (alarm.name === TRACKING_ALARM) {
-    await tickUsage();
-  }
+  if (alarm.name === ALARM_NAME) await stopSession();
+  if (alarm.name === TRACKING_ALARM) await tickUsage();
 });
 
 chrome.runtime.onInstalled.addListener(async () => {
   const data = await chrome.storage.local.get(['allowlist', 'session']);
-  if (!Array.isArray(data.allowlist)) {
-    await chrome.storage.local.set({ allowlist: [] });
-  }
-  if (!data.session) {
-    await clearSession();
-  }
+  if (!Array.isArray(data.allowlist)) await chrome.storage.local.set({ allowlist: [] });
+  if (!data.session) await clearSession();
   await initializeTracking();
   chrome.alarms.create(TRACKING_ALARM, { periodInMinutes: 1 });
   await restoreSession();
@@ -183,9 +155,7 @@ chrome.runtime.onStartup.addListener(async () => {
 
 chrome.tabs.onActivated.addListener(async () => {
   const activeDomain = await resolveActiveDomain();
-  if (activeDomain !== currentDomain) {
-    await updateTrackingState(activeDomain);
-  }
+  if (activeDomain !== currentDomain) await updateTrackingState(activeDomain);
 });
 
 chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
@@ -195,9 +165,7 @@ chrome.tabs.onUpdated.addListener(async (_tabId, changeInfo, tab) => {
   const allowlist = normalizeAllowlist(await getAllowlist());
   const matched = allowlist.find((allowed) => activeDomain === allowed || activeDomain.endsWith(`.${allowed}`));
   const nextDomain = matched || null;
-  if (nextDomain !== currentDomain) {
-    await updateTrackingState(nextDomain);
-  }
+  if (nextDomain !== currentDomain) await updateTrackingState(nextDomain);
 });
 
 chrome.windows.onFocusChanged.addListener(async (windowId) => {
@@ -206,9 +174,7 @@ chrome.windows.onFocusChanged.addListener(async (windowId) => {
     return;
   }
   const activeDomain = await resolveActiveDomain();
-  if (activeDomain !== currentDomain) {
-    await updateTrackingState(activeDomain);
-  }
+  if (activeDomain !== currentDomain) await updateTrackingState(activeDomain);
 });
 
 chrome.runtime.onMessage.addListener((message: BackgroundMessage, _sender: chrome.runtime.MessageSender, sendResponse: (response: unknown) => void) => {

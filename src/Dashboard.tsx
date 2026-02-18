@@ -128,14 +128,7 @@ const Dashboard = () => {
           <p className="text-sm text-muted-foreground">Today · {todayKey}</p>
         </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Total Time on Allowed Sites</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-semibold">{formatDuration(totalSeconds)}</div>
-          </CardContent>
-        </Card>
+        {/* Total Time card removed as requested */}
 
         <Card>
           <CardHeader className="pb-2">
@@ -155,7 +148,7 @@ const Dashboard = () => {
                       if (name === 'minutes') return [`${value}m`, 'Time'];
                       return [value, name];
                     }} labelFormatter={(label: string) => label} />
-                    <Bar dataKey="minutes" fill="#60a5fa" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="minutes" fill="#a16207" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

@@ -204,11 +204,7 @@ const Popup = () => {
                   {session.strictMode ? '🔒 Strict' : 'Standard'}
                 </span>
               </div>
-              <Button
-                variant="destructive"
-                disabled={session.strictMode}
-                onClick={handleStopSession}
-              >
+              <Button variant="destructive" disabled={session.strictMode} onClick={handleStopSession}>
                 Stop Session
               </Button>
               {session.strictMode && (
