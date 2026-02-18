@@ -38,7 +38,7 @@ const Options = () => {
 
   const clearData = () => {
     if (confirm('确定要清空所有使用统计数据吗？此操作无法恢复。')) {
-      chrome.storage.local.set({ stats: {}, notifications: {} });
+      chrome.storage.local.set({ stats: {}, statsByDate: {}, notifications: {}, trackingState: {} });
     }
   };
 

@@ -6,6 +6,8 @@
   "permissions": [
     "storage",
     "alarms",
+    "tabs",
+    "windows",
     "declarativeNetRequest",
     "declarativeNetRequestWithHostAccess"
   ],

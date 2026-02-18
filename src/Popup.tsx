@@ -119,6 +119,10 @@ const Popup = () => {
     }
   };
 
+  const handleOpenDashboard = () => {
+    chrome.tabs.create({ url: chrome.runtime.getURL('dashboard.html') });
+  };
+
   return (
     <div className="w-[360px] p-4 bg-background text-foreground">
       <Card className="mb-4">
@@ -210,11 +214,19 @@ const Popup = () => {
               {session.strictMode && (
                 <p className="text-xs text-muted-foreground">Strict mode is enabled. Session cannot be stopped early.</p>
               )}
+              <Button variant="secondary" onClick={handleOpenDashboard}>
+                See Time Dashboard
+              </Button>
             </>
           ) : (
-            <Button className="w-full" onClick={handleStartSession}>
-              Start Focus Session
-            </Button>
+            <div className="space-y-2">
+              <Button className="w-full" onClick={handleStartSession}>
+                Start Focus Session
+              </Button>
+              <Button className="w-full" variant="secondary" onClick={handleOpenDashboard}>
+                See Time Dashboard
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>
