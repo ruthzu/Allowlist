@@ -3,6 +3,10 @@
 - **Overview:** Allowlist-based focus mode for distraction‑free browsing. Blocks all non‑allowed sites during a session, with a clear block page, a quick popup toggle, and a simple dashboard for time insights. Built with Vite, React, TypeScript, and Tailwind CSS.
 - **Core:** MV3 `service_worker` with `declarativeNetRequest` for fast, reliable blocking.
 
+**Screenshot**
+
+![Allowlist view](public/allowlist_Screenshot.png)
+
 **Features**
 
 - **Focus Mode Toggle:** Quick on/off via the popup ([index.html](index.html)).
